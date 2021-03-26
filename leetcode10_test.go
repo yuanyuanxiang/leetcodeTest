@@ -338,3 +338,91 @@ func findMedianSortedArrays(nums1 []int, nums2 []int) float64 {
 	}
 	return float64(nums[(m1+m2)/2])
 }
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+func Test0005(t *testing.T) {
+	fmt.Println(longestPalindrome("babad"))
+	fmt.Println(longestPalindrome("cbbd"))
+	fmt.Println(longestPalindrome("a"))
+	fmt.Println(longestPalindrome("ac"))
+}
+
+/*
+【5.最长回文子串】
+给你一个字符串 s，找到 s 中最长的回文子串。
+
+示例 1：
+输入：s = "babad"
+输出："bab"
+解释："aba" 同样是符合题意的答案。
+
+示例 2：
+输入：s = "cbbd"
+输出："bb"
+
+示例 3：
+输入：s = "a"
+输出："a"
+
+示例 4：
+输入：s = "ac"
+输出："a"
+
+提示：
+1 <= s.length <= 1000
+s 仅由数字和英文字母（大写和/或小写）组成
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/longest-palindromic-substring
+*/
+func longestPalindrome(s string) string {
+	var max int
+	var r string
+	for i, n := 0, len(s); i < n; i++ {
+		for j := i + max; j < n; j++ {
+			if t := s[i : j+1]; isHuiWen(t) {
+				r = t
+				max = j + 1 - i
+			}
+		}
+	}
+	return r
+}
+
+func TestReverse(t *testing.T) {
+	fmt.Println(string(reverse([]byte(""))))
+	fmt.Println(string(reverse([]byte("r"))))
+	fmt.Println(string(reverse([]byte("hello"))))
+	fmt.Println(string(reverse([]byte("test"))))
+}
+
+func reverse(s []byte) []byte {
+	n := len(s)
+	half := n / 2
+	for i := 0; i < half; i++ {
+		var t = s[i]
+		s[i] = s[n-1-i]
+		s[n-1-i] = t
+	}
+	return s
+}
+
+func TestHuiWen(t *testing.T) {
+	fmt.Println(isHuiWen(""))
+	fmt.Println(isHuiWen("ok"))
+	fmt.Println(isHuiWen("oo"))
+	fmt.Println(isHuiWen("oko"))
+	fmt.Println(isHuiWen("okko"))
+}
+
+func isHuiWen(s string) bool {
+	n := len(s)
+	half := n / 2
+	for i := 0; i < half; i++ {
+		if s[i] != s[n-1-i] {
+			return false
+		}
+	}
+	return true
+}
