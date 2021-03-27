@@ -2,6 +2,7 @@ package leetcodeTest
 
 import (
 	"fmt"
+	"math"
 	"strings"
 	"testing"
 )
@@ -67,6 +68,9 @@ type ListNode struct {
 }
 
 func NewListNode(arr []int) *ListNode {
+	if len(arr) == 0 {
+		return nil
+	}
 	var h = &ListNode{}
 	var r = h
 	for i, v := range arr {
@@ -425,4 +429,369 @@ func isHuiWen(s string) bool {
 		}
 	}
 	return true
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+func Test0006(t *testing.T) {
+	fmt.Println(convert("PAYPALISHIRING", 3))
+	fmt.Println(convert("PAYPALISHIRING", 4))
+	fmt.Println(convert("A", 1))
+	fmt.Println(convert("ABC", 2))
+}
+
+/*
+【6.Z字形变换】
+将一个给定字符串 s 根据给定的行数 numRows ，以从上往下、从左到右进行 Z 字形排列。
+比如输入字符串为 "PAYPALISHIRING" 行数为 3 时，排列如下：
+P   A   H   N  0   4   8    4*i+0
+A P L S I I G  1 3 5 7 9    4*i+1 4*i+3
+Y   I   R      2   6   10   4*i+2
+之后，你的输出需要从左往右逐行读取，产生出一个新的字符串，比如："PAHNAPLSIIGYIR"。
+请你实现这个将字符串进行指定行数变换的函数：
+string convert(string s, int numRows);
+
+示例 1：
+输入：s = "PAYPALISHIRING", numRows = 3
+输出："PAHNAPLSIIGYIR"
+
+示例 2：
+输入：s = "PAYPALISHIRING", numRows = 4
+输出："PINALSIGYAHRPI"
+解释：
+P     I    N  0    6      12  6*i+0
+A   L S  I G  1  5 7   11 13  6*i+1 6*i+5
+Y A   H R     2 4  8 10   14  6*i+2 6*i+4
+P     I       3    9      15  6*i+3
+
+示例 3：
+输入：s = "A", numRows = 1
+输出："A"
+
+提示：
+1 <= s.length <= 1000
+s 由英文字母（小写和大写）、',' 和 '.' 组成
+1 <= numRows <= 1000
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/zigzag-conversion
+*/
+func convert(s string, numRows int) string {
+	if numRows <= 1 {
+		return s
+	}
+	n := len(s)
+	m := (2*numRows - 2)
+	buf := make([][]byte, numRows)
+	buf[0] = make([]byte, 0, n/m+1)
+	buf[numRows-1] = make([]byte, 0, n/m+1)
+	for i := 1; i < numRows-1; i++ {
+		buf[i] = make([]byte, 0, 2*n/m+1)
+	}
+	for i := 0; i < n; i++ {
+		index := i % m
+		if index >= numRows {
+			index = m - index
+		}
+		buf[index] = append(buf[index], s[i])
+	}
+	var r = make([]byte, 0, n)
+	for i := 0; i < numRows; i++ {
+		r = append(r, buf[i]...)
+	}
+
+	return string(r)
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+func Test0007(t *testing.T) {
+	fmt.Println(reverse7(123))
+	fmt.Println(reverse7(-123))
+	fmt.Println(reverse7(120))
+	fmt.Println(reverse7(0))
+	fmt.Println(reverse7(math.MinInt32))
+}
+
+/*
+【7.整数反转】
+给你一个 32 位的有符号整数 x ，返回将 x 中的数字部分反转后的结果。
+如果反转后整数超过 32 位的有符号整数的范围 [−2^31,  2^31 − 1] ，就返回 0。
+假设环境不允许存储 64 位整数（有符号或无符号）。
+
+示例 1：
+输入：x = 123
+输出：321
+
+示例 2：
+输入：x = -123
+输出：-321
+
+示例 3：
+输入：x = 120
+输出：21
+
+示例 4：
+输入：x = 0
+输出：0
+
+提示：
+-2^31 <= x <= 2^31 - 1
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/reverse-integer
+*/
+func reverse7(x int) int {
+	var flag = x >= 0
+	if !flag {
+		x = -x
+	}
+	var arr = make([]int, 12)
+	var num int
+	for i, n := 0, x; n != 0; i++ {
+		arr[i] = n % 10
+		n /= 10
+		num++
+	}
+	var k = 1
+	var r = 0
+	for i := 0; i < num; i++ {
+		r += k * arr[num-1-i]
+		k *= 10
+	}
+	if !flag {
+		r = -r
+		if r < math.MinInt32 {
+			return 0
+		}
+		return r
+	}
+	if r > math.MaxInt32 {
+		return 0
+	}
+	return r
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+func Test0008(t *testing.T) {
+	fmt.Println(myAtoi("42"))
+	fmt.Println(myAtoi("+420"))
+	fmt.Println(myAtoi("-42"))
+	fmt.Println(myAtoi("  4193 with words"))
+	fmt.Println(myAtoi("0042"))
+	fmt.Println(myAtoi("words and 987"))
+	fmt.Println(myAtoi(".42"))
+	fmt.Println(myAtoi("-91283472332"))
+	fmt.Println(myAtoi("  0000000000012345678"))
+	fmt.Println(myAtoi("9223372036854775808"))
+	fmt.Println(myAtoi("-9223372036854775808"))
+	fmt.Println(myAtoi("18446744073709551617"))
+	fmt.Println(myAtoi("10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000522545459"))
+	fmt.Println(myAtoi("-2147483648"))
+	fmt.Println(myAtoi("+2147483648"))
+	fmt.Println(myAtoi("-21474836480"))
+	fmt.Println(myAtoi("+21474836470"))
+}
+
+/*
+【8. 字符串转换整数 (atoi)】
+请你来实现一个 myAtoi(string s) 函数，使其能将字符串转换成一个 32 位有符号整数（类似 C/C++ 中的 atoi 函数）。
+
+函数 myAtoi(string s) 的算法如下：
+读入字符串并丢弃无用的前导空格
+检查下一个字符（假设还未到字符末尾）为正还是负号，读取该字符（如果有）。 确定最终结果是负数还是正数。 如果两者都不存在，则假定结果为正。
+读入下一个字符，直到到达下一个非数字字符或到达输入的结尾。字符串的其余部分将被忽略。
+将前面步骤读入的这些数字转换为整数（即，"123" -> 123， "0032" -> 32）。如果没有读入数字，则整数为 0 。必要时更改符号（从步骤 2 开始）。
+如果整数数超过 32 位有符号整数范围 [−2^31,  2^31 − 1] ，需要截断这个整数，使其保持在这个范围内。具体来说，小于 −2^31 的整数应该被固定为 −2^31 ，
+大于 2^31 − 1 的整数应该被固定为 2^31 − 1 。
+返回整数作为最终结果。
+
+注意：
+本题中的空白字符只包括空格字符 ' ' 。
+除前导空格或数字后的其余字符串外，请勿忽略 任何其他字符。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/string-to-integer-atoi
+*/
+func myAtoi(s string) int {
+	n := len(s)
+	var p int
+	for ; p < n && s[p] == ' '; p++ {
+	}
+	if p == n {
+		return 0
+	}
+	if s[p] != '+' && s[p] != '-' && !(s[p] >= '0' && s[p] <= '9') {
+		return 0
+	}
+	var neg = s[p] == '-'
+	if neg {
+		p++
+		if p == n || !(s[p] >= '0' && s[p] <= '9') {
+			return 0
+		}
+	}
+	if s[p] == '+' {
+		p++
+		if p == n || !(s[p] >= '0' && s[p] <= '9') {
+			return 0
+		}
+	}
+	for ; p < n && s[p] == '0'; p++ {
+	}
+	if p == n {
+		return 0
+	}
+	var arr = make([]int, n-p)
+	var i int
+	for ; p < n && (s[p] >= '0' && s[p] <= '9'); i++ {
+		arr[i] = int(s[p] - '0')
+		p++
+	}
+	if i > 10 {
+		if neg {
+			return math.MinInt32
+		}
+		return math.MaxInt32
+	}
+	var k = 1
+	var r int
+	for j := 0; j < i; j++ {
+		r += k * arr[i-1-j]
+		k *= 10
+	}
+	if neg {
+		if -r < math.MinInt32 {
+			return math.MinInt32
+		}
+		return -r
+	}
+	if r > math.MaxInt32 {
+		return math.MaxInt32
+	}
+	return r
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+func Test0009(t *testing.T) {
+	fmt.Println("121:", isPalindrome(121))
+	fmt.Println("-121:", isPalindrome(-121))
+	fmt.Println("10:", isPalindrome(10))
+	fmt.Println("-101:", isPalindrome(-101))
+	fmt.Println("0:", isPalindrome(0))
+}
+
+/*
+【9. 回文数】
+给你一个整数 x ，如果 x 是一个回文整数，返回 true ；否则，返回 false 。
+回文数是指正序（从左向右）和倒序（从右向左）读都是一样的整数。例如，121 是回文，而 123 不是。
+
+示例 1：
+输入：x = 121
+输出：true
+
+示例 2：
+输入：x = -121
+输出：false
+解释：从左向右读, 为 -121 。 从右向左读, 为 121- 。因此它不是一个回文数。
+
+示例 3：
+输入：x = 10
+输出：false
+解释：从右向左读, 为 01 。因此它不是一个回文数。
+
+示例 4：
+输入：x = -101
+输出：false
+
+提示：
+-2^31 <= x <= 2^31 - 1
+
+进阶：你能不将整数转为字符串来解决这个问题吗？
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/palindrome-number
+*/
+func isPalindrome(x int) bool {
+	if x < 0 {
+		return false
+	}
+	var arr = make([]int, 12)
+	i := 0
+	for ; x != 0; i++ {
+		arr[i] = x % 10
+		x /= 10
+	}
+	for j := 0; j < i/2; j++ {
+		if arr[j] != arr[i-1-j] {
+			return false
+		}
+	}
+	return true
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+func Test0010(t *testing.T) {
+	fmt.Println(isMatch("aaa", "ab*ac*a"))
+	fmt.Println(isMatch("aaa", "a*a"))
+	fmt.Println(isMatch("aaa", "a.a"))
+	fmt.Println(isMatch("abcd", "d*"))
+	fmt.Println(isMatch("mississippi", "mis*is*p*."))
+	fmt.Println(isMatch("aa", ""))
+	fmt.Println(isMatch("aa", "a"))
+	fmt.Println(isMatch("aa", "a*"))
+	fmt.Println(isMatch("ab", ".*"))
+	fmt.Println(isMatch("aab", "c*a*b"))
+	fmt.Println(isMatch("abcccc", ".*c"))
+	fmt.Println(isMatch("abcccc", ".*cd"))
+	fmt.Println(isMatch("abcccc", "a.*c"))
+}
+
+/*
+【10. 正则表达式匹配】
+给你一个字符串 s 和一个字符规律 p，请你来实现一个支持 '.' 和 '*' 的正则表达式匹配。
+'.' 匹配任意单个字符
+'*' 匹配零个或多个前面的那一个元素
+所谓匹配，是要涵盖 整个 字符串 s的，而不是部分字符串。
+
+示例 1：
+输入：s = "aa" p = "a"
+输出：false
+解释："a" 无法匹配 "aa" 整个字符串。
+
+示例 2:
+输入：s = "aa" p = "a*"
+输出：true
+解释：因为 '*' 代表可以匹配零个或多个前面的那一个元素, 在这里前面的元素就是 'a'。因此，字符串 "aa" 可被视为 'a' 重复了一次。
+
+示例 3：
+输入：s = "ab" p = ".*"
+输出：true
+解释：".*" 表示可匹配零个或多个（'*'）任意字符（'.'）。
+
+示例 4：
+输入：s = "aab" p = "c*a*b"
+输出：true
+解释：因为 '*' 表示零个或多个，这里 'c' 为 0 个, 'a' 被重复一次。因此可以匹配字符串 "aab"。
+
+示例 5：
+输入：s = "mississippi" p = "mis*is*p*."
+输出：false
+
+提示：
+0 <= s.length <= 20
+0 <= p.length <= 30
+s 可能为空，且只包含从 a-z 的小写字母。
+p 可能为空，且只包含从 a-z 的小写字母，以及字符 . 和 *。
+保证每次出现字符 * 时，前面都匹配到有效的字符
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/regular-expression-matching
+
+TODO 此题需要使用所谓“动态规划”的算法，本人尚不明白. 此题遗留.
+*/
+func isMatch(s string, p string) bool {
+	return false
 }
