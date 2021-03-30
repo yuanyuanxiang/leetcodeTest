@@ -408,3 +408,72 @@ func reverseBits(num uint32) uint32 {
 	}
 	return r
 }
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+func Test0074(t *testing.T) {
+	fmt.Println(searchMatrix([][]int{{1, 1}}, 0))
+	fmt.Println(searchMatrix([][]int{{1, 3}}, 1))
+	fmt.Println(searchMatrix([][]int{{1, 3, 5, 7}, {10, 11, 16, 20}, {23, 30, 34, 60}}, 3))
+	fmt.Println(searchMatrix([][]int{{1, 3, 5, 7}, {10, 11, 16, 20}, {23, 30, 34, 60}}, 13))
+}
+
+/*
+【74. 搜索二维矩阵】
+编写一个高效的算法来判断 m x n 矩阵中，是否存在一个目标值。该矩阵具有如下特性：
+
+每行中的整数从左到右按升序排列。
+每行的第一个整数大于前一行的最后一个整数。
+
+
+示例 1：
+输入：matrix = [[1,3,5,7],[10,11,16,20],[23,30,34,60]], target = 3
+输出：true
+
+示例 2：
+输入：matrix = [[1,3,5,7],[10,11,16,20],[23,30,34,60]], target = 13
+输出：false
+
+提示：
+m == matrix.length
+n == matrix[i].length
+1 <= m, n <= 100
+-10^4 <= matrix[i][j], target <= 10^4
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/search-a-2d-matrix
+*/
+func searchMatrix(matrix [][]int, target int) bool {
+	if len(matrix) == 0 {
+		return false
+	}
+	return searchMatrix2(matrix, 0, len(matrix)*len(matrix[0]), target)
+}
+
+func searchMatrix2(matrix [][]int, from, to, target int) bool {
+	if len(matrix) == 0 || from == to || from < 0 || to < 0 {
+		return false
+	}
+	if len(matrix) == 1 && len(matrix[0]) == 1 {
+		return matrix[0][0] == target
+	}
+	var n = len(matrix[0])
+	var index = from + (to-from)/2
+	var row, col = index / n, index % n
+	var f = matrix[row][col]
+	switch {
+	case f == target:
+		return true
+	case f < target:
+		if index == from {
+			return searchMatrix2(matrix, index+1, to, target)
+		}
+		return searchMatrix2(matrix, index, to, target)
+	case f > target:
+		if index == from {
+			return searchMatrix2(matrix, from, index-1, target)
+		}
+		return searchMatrix2(matrix, from, index, target)
+	}
+	return false
+}
