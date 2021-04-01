@@ -477,3 +477,115 @@ func searchMatrix2(matrix [][]int, from, to, target int) bool {
 	}
 	return false
 }
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+func Test0090(t *testing.T) {
+	fmt.Println(subsetsWithDup([]int{1, 2, 3, 4, 5}))
+	fmt.Println(subsetsWithDup([]int{9, 0, 3, 5, 7}))
+	fmt.Println(subsetsWithDup([]int{1, 1, 2, 2}))
+	fmt.Println(subsetsWithDup([]int{1, 2}))
+	fmt.Println(subsetsWithDup([]int{1, 2, 3}))
+	fmt.Println(subsetsWithDup([]int{1, 2, 2}))
+	fmt.Println(subsetsWithDup([]int{0}))
+}
+
+/*
+【90. 子集 II】
+给你一个整数数组 nums ，其中可能包含重复元素，请你返回该数组所有可能的子集（幂集）。
+
+解集 不能 包含重复的子集。返回的解集中，子集可以按 任意顺序 排列。
+
+示例 1：
+输入：nums = [1,2,2]
+输出：[[],[1],[1,2],[1,2,2],[2],[2,2]]
+
+示例 2：
+输入：nums = [0]
+输出：[[],[0]]
+
+提示：
+1 <= nums.length <= 10
+-10 <= nums[i] <= 10
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/subsets-ii
+*/
+func subsetsWithDup(nums []int) [][]int {
+	r := recursive0090(nums, len(nums))
+	s := make([][]int, 0, len(r))
+	for _, v := range r {
+		var exist bool
+		for j := 0; j < len(s); j++ {
+			if arrayContains(v, s[j]) && arrayContains(s[j], v) {
+				exist = true
+				break
+			}
+		}
+		if !exist {
+			s = append(s, v)
+		}
+	}
+	return s
+}
+
+// arrayContains 判断第一个数组包含第二个数组.
+func arrayContains(a1, a2 []int) bool {
+	if len(a1) < len(a2) {
+		return false
+	}
+	for _, v2 := range a2 {
+		var num int
+		for _, v1 := range a1 {
+			if v1 == v2 {
+				num++
+			}
+		}
+		if num == 0 {
+			return false
+		}
+		for _, v1 := range a2 {
+			if v1 == v2 {
+				num--
+			}
+		}
+		if num != 0 {
+			return false
+		}
+	}
+	return true
+}
+
+// recursive0090 从集合中取出元素个数在n以内的子集.
+// TODO 递归函数存在问题.
+func recursive0090(nums []int, n int) [][]int {
+	m := len(nums)
+	if m == 0 || n == 0 {
+		return [][]int{}
+	}
+	if n > m {
+		n = m
+	}
+	switch n {
+	case 0:
+		return [][]int{}
+	case 1:
+		var r = make([][]int, m)
+		for i, v := range nums {
+			r[i] = []int{v}
+		}
+		return append(r, []int{})
+	default:
+		t := recursive0090(nums[1:], n-1)
+		p := len(t)
+		var r = make([][]int, 2*p)
+		copy(r[:p], t)
+		fmt.Println("********************************************************************************", n)
+		for i, v := range t {
+			s := v
+			r[i+p] = append(s, nums[0])
+			fmt.Println(s, r[i+p])
+		}
+		return r
+	}
+}
