@@ -557,7 +557,6 @@ func arrayContains(a1, a2 []int) bool {
 }
 
 // recursive0090 从集合中取出元素个数在n以内的子集.
-// TODO 递归函数存在问题.
 func recursive0090(nums []int, n int) [][]int {
 	m := len(nums)
 	if m == 0 || n == 0 {
@@ -580,11 +579,11 @@ func recursive0090(nums []int, n int) [][]int {
 		p := len(t)
 		var r = make([][]int, 2*p)
 		copy(r[:p], t)
-		fmt.Println("********************************************************************************", n)
-		for i, v := range t {
-			s := v
-			r[i+p] = append(s, nums[0])
-			fmt.Println(s, r[i+p])
+		copy(r[p:2*p], t)
+		for i := 0; i < p; i++ {
+			r[i+p] = make([]int, len(r[i]))
+			copy(r[i+p], r[i])
+			r[i+p] = append(r[i+p], nums[0])
 		}
 		return r
 	}
